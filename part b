@@ -1,0 +1,69 @@
+CREATE TABLE Employee (
+    EmpID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Salary DOUBLE
+);
+
+INSERT INTO Employee VALUES (1, 'Ravi', 45000);
+INSERT INTO Employee VALUES (2, 'Priya', 55000);
+INSERT INTO Employee VALUES (3, 'Kiran', 60000);
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Search</title>
+</head>
+<body>
+    <h2>Search Employee</h2>
+    <form action="EmployeeServlet" method="get">
+        Enter Employee ID: <input type="text" name="empid">
+        <input type="submit" value="Search">
+    </form>
+    <br>
+    <a href="EmployeeServlet">View All Employees</a>
+</body>
+</html>
+package com.example.webapp;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import java.io.*;
+import java.sql.*;
+
+public class EmployeeServlet extends HttpServlet {
+    private Connection connect() throws SQLException {
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "root", "root");
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        String empid = request.getParameter("empid");
+
+        try (Connection con = connect()) {
+            Statement stmt = con.createStatement();
+            String query;
+
+            if (empid != null && !empid.isEmpty()) {
+                query = "SELECT * FROM Employee WHERE EmpID=" + empid;
+            } else {
+                query = "SELECT * FROM Employee";
+            }
+
+            ResultSet rs = stmt.executeQuery(query);
+            out.println("<h2>Employee Details</h2>");
+            out.println("<table border='1'><tr><th>ID</th><th>Name</th><th>Salary</th></tr>");
+
+            while (rs.next()) {
+                out.println("<tr><td>" + rs.getInt(1) + "</td><td>" +
+                        rs.getString(2) + "</td><td>" + rs.getDouble(3) + "</td></tr>");
+            }
+
+            out.println("</table>");
+        } catch (Exception e) {
+            out.println("<p style='color:red;'>Error: " + e.getMessage() + "</p>");
+        }
+    }
+}
