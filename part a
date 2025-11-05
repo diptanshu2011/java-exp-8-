@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+</head>
+<body>
+    <h2>Login Page</h2>
+    <form action="LoginServlet" method="post">
+        Username: <input type="text" name="username" required><br><br>
+        Password: <input type="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form>
+</body>
+</html>
+
+
+package com.example.webapp;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
+import java.io.*;
+
+public class LoginServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        String user = request.getParameter("username");
+        String pass = request.getParameter("password");
+
+        // Hardcoded credentials
+        if ("admin".equals(user) && "1234".equals(pass)) {
+            out.println("<h2>Welcome, " + user + "!</h2>");
+            out.println("<p>Login Successful.</p>");
+        } else {
+            out.println("<h3 style='color:red;'>Invalid username or password!</h3>");
+            out.println("<a href='login.html'>Try Again</a>");
+        }
+    }
+}
